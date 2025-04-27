@@ -1,8 +1,3 @@
-Stringtie
-
-daniro@ssh.computerome.dk
-LarsLarsenDF2407
-
 Article to the protocol:
 https://www.nature.com/articles/nprot.2016.095#Sec11
 
@@ -13,19 +8,6 @@ Here i load in the tools that we need:
 
 Here i move to my working directory:
    cd /home/projects/ku_00299/people/daniro/Stringtie_work_folder/FullMerge
-
-mv /home/projects/ku_00299/people/daniro/Stringtie_work_folder/Ocellatus/Oce-NonSkinSplen
-/home/projects/ku_00299/people/daniro/Stringtie_work_folder/Picturatus/Pic-NonSkinSplen
-
-mv NonSkinSplen.bam /home/projects/ku_00299/people/daniro/Stringtie_work_folder/FullMerge
-
-/home/projects/ku_00299/data
-
-step 3:
-Original code:
-stringtie -p 8 -G chrX_data/genes/chrX.gtf -o ERR188044_chrX.gtf –l ERR188044 ERR188044_chrX.bam
-
-stringtie -l ET_557 -o ET_55711.gtf ET_557.bam
 
 Here i am converting the bam files into gtf format
    stringtie -l ET_557 -o ET_557.gtf ET_557.bam
@@ -48,25 +30,6 @@ Here i am converting the bam files into gtf format
    stringtie -l NonSkinSplen -o NonSkinSplen.gtf NonSkinSplen.bam
 
 
-
-stringtie -o YG021-06N1.gtf YG021-06N1.bam
-
-ET_612.bam
-ET_622.bam
-YG020-05N1.bam
-YG020-06N1.bam
-YG021-05N1.bam
-YG021-07N1.bam
-YG021-08N1.bam
-
-cd /home/projects/ku_00299/data/SynPic1_bams
-
-cp ET_612.bam /home/projects/ku_00299/people/daniro/Stringtie_work_folder/ET_612_1/
-
-
-
-
-Step 4:
 Here i am merging together all the transcritps from our different samples, for each species individually
    stringtie --merge -o OcellatusMerge.gtf OcellatusMerge.txt
    stringtie --merge -o SplenMerge.gtf SplenMerge.txt
@@ -95,22 +58,6 @@ Ocellatus:
    YG021-07N1.gtf
    YG021-08N1.gtf
 
-
-
-Step 5:
-Original code:
-stringtie –e –B -p 8 -G stringtie_merged.gtf -o ballgown/ERR204916/ERR204916_chrX.gtf ERR204916_chrX.bam
--e = only estimate the abudance of given reference transcripts (requires -G)
--G = reference annotation to use for guiding the assembly process (GTF/GFF)
--B enables output of Ballgown table files which will be created in the same directory as the output GTF (Requires -G, -o recommended)
--p number of threads (CPUs) to use (default: 1)
--o = output path/file name for the assembled transcripts GTF (default stdout)
-
-My version (original): 
-stringtie -o /home/projects/ku_00299/people/daniro/Stringtie_work_folder/FullMerge/ET_557/ET_557_Merged.bam -e -B -G SplenMerge.gtf ET_557.bam
-
-(For editing)
-stringtie -o /home/projects/ku_00299/people/daniro/Stringtie_work_folder/ET_557_2/ET_557_Merge.bam -e -B -G SplenMerge.gtf /home/projects/ku_00299/people/daniro/Stringtie_work_folder/ET_557_2/ET_557.bam
 
 Here i am creating the ballgown table counts, as well as estimating the transcritp abundance:
    stringtie -l ET_557 -o /home/projects/ku_00299/people/daniro/Stringtie_work_folder/FullMerge/ET_557/ET_557_Merged.bam -e -B -G SplenMerge.gtf ET_557.bam
@@ -148,7 +95,6 @@ Here i am creating the ballgown table counts, as well as estimating the transcri
    stringtie -l NonSkinSplen -o /home/projects/ku_00299/people/daniro/Stringtie_work_folder/FullMerge/NonSkinSplen/NonSkinSplen_Merged.bam -e -B -G SplenMerge.gtf NonSkinSplen.bam
 
 
-
 output files:
 put e2t.ctab
 put e_data.ctab
@@ -156,65 +102,3 @@ put YG021-08N1_Merged.bam
 put i2t.ctab
 put i_data.ctab
 put t_data.ctab
-
-rm e2t.ctab
-rm e_data.ctab
-rm ET_557_Merged.bam
-rm i2t.ctab
-rm i_data.ctab
-rm t_data.ctab
-
-
-
-
-
-samtools fasta ET_570.bam > ET_570.fasta
-
-
-
-
-
---version : print just the version at stdout and exit
- --conservative : conservative transcript assembly, same as -t -c 1.5 -f 0.05
- --mix : both short and long read data alignments are provided
-        (long read alignments must be the 2nd BAM/CRAM input file)
- --rf : assume stranded library fr-firststrand
- --fr : assume stranded library fr-secondstrand
- -G reference annotation to use for guiding the assembly process (GTF/GFF)
- --ptf : load point-features from a given 4 column feature file <f_tab>
- -o output path/file name for the assembled transcripts GTF (default: stdout)
- -l name prefix for output transcripts (default: STRG)
- -f minimum isoform fraction (default: 0.01)
- -L long reads processing; also enforces -s 1.5 -g 0 (default:false)
- -R if long reads are provided, just clean and collapse the reads but
-    do not assemble
- -m minimum assembled transcript length (default: 200)
- -a minimum anchor length for junctions (default: 10)
- -j minimum junction coverage (default: 1)
- -t disable trimming of predicted transcripts based on coverage
-    (default: coverage trimming is enabled)
- -c minimum reads per bp coverage to consider for multi-exon transcript
-    (default: 1)
- -s minimum reads per bp coverage to consider for single-exon transcript
-    (default: 4.75)
- -v verbose (log bundle processing details)
- -g maximum gap allowed between read mappings (default: 50)
- -M fraction of bundle allowed to be covered by multi-hit reads (default:1)
- -p number of threads (CPUs) to use (default: 1)
- -A gene abundance estimation output file
- -N nascent aware assembly: use this option with rRNA-depleted RNAseq
-     libraries (e.g. Total RNA, Ribo-Zero)
- --nasc : enables -N but also outputs the assembled nascent transcripts
- -E define window around possibly erroneous splice sites from long reads to
-    look out for correct splice sites (default: 25)
- -B enable output of Ballgown table files which will be created in the
-    same directory as the output GTF (requires -G, -o recommended)
- -b enable output of Ballgown table files but these files will be 
-    created under the directory path given as <dir_path>
- -e only estimate the abundance of given reference transcripts (requires -G)
- --viral only relevant for long reads from viral data where splice sites
-    do not follow consensus (default:false)
- -x do not assemble any transcripts on the given reference sequence(s)
- -u no multi-mapping correction (default: correction enabled)
- -h print this usage message and exit
- --ref/--cram-ref reference genome FASTA file for CRAM input
