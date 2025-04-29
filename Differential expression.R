@@ -48,9 +48,9 @@
   bg_Ocellatus_filt = subset(bg_Ocellatus,"rowVars(texpr(bg_Ocellatus)) >1",genomesubset=TRUE)
 
 #Here i am extracting FPKM data from our ballgown object
-  fpkm_matrix_Splen <- gexpr(bg_splendidus_filt)
-  fpkm_matrix_Pic <- gexpr(bg_Picturatus_filt)
-  fpkm_matrix_Oce <- gexpr(bg_Ocellatus_filt)
+  fpkm_matrix_Splen <- texpr(bg_splendidus_filt)
+  fpkm_matrix_Pic <- texpr(bg_Picturatus_filt)
+  fpkm_matrix_Oce <- texpr(bg_Ocellatus_filt)
 
 #Here i am log2 transforming my FPKM data
   log_fpkm_Splen <- log2(fpkm_matrix_Splen + 0.1)
