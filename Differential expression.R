@@ -92,3 +92,37 @@
   write.csv(Splen_sig_genes, "Splendidus_gene_results.csv", row.names=FALSE)
   write.csv(Pic_sig_genes, "Picturatus_gene_fin_results.csv", row.names=FALSE)
   write.csv(Oce_sig_genes, "Ocellatus_gene_Skin_fin_results.csv", row.names=FALSE)
+
+#Here i am plotting my data for visualization
+  boxplot(log_fpkm_Splen,
+          col=as.numeric(Splen_info$Tissue),
+          las=2,
+          ylab="log2(FPKM+0.1)",
+          main = "FPKM distribution across Splendidus species")
+
+  boxplot(log_fpkm_Pic,
+          col=as.numeric(Pic_info$Tissue),
+          las=2,
+          ylab="log2(FPKM+0.1)",
+          main = "FPKM distribution across Picturatus species")
+
+  boxplot(log_fpkm_Oce,
+          col=as.numeric(Oce_info$Tissue),
+          las=2,
+          ylab='log2(FPKM+0.1)',
+          main = "FPKM distribution across Ocellatus species")
+
+#Bargraph for differentially expressed transcripts.
+  det_counts <- data.frame(
+    Species = c("Splendidus", "Picturatus", "Ocellatus"),
+    DEG_Count = c(nrow(Splen_sig_transcritps), nrow(Pic_sig_transcritps), nrow(Oce_sig_transcritps))
+    )
+
+  ggplot(det_counts, 
+         aes(x = Species, y = DEG_Count)) +
+         geom_bar(stat = "identity") +
+         scale_fill_brewer(palette = "Set1") +
+         labs(title = "Differentially expressed transcritps per species",
+         x = "Species",
+         y = "Number of DETs") +
+         theme(legend.position="none")
