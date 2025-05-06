@@ -73,9 +73,9 @@ bg_Picturatus_filt = subset(bg_Picturatus,"rowVars(texpr(bg_Picturatus)) >1",gen
 bg_Ocellatus_filt = subset(bg_Ocellatus,"rowVars(texpr(bg_Ocellatus)) >1",genomesubset=TRUE)
 
 #Here i am extracting FPKM data from our ballgown object
-fpkm_matrix_Splen <- texpr(bg_splendidus_filt)
-fpkm_matrix_Pic <- texpr(bg_Picturatus_filt)
-fpkm_matrix_Oce <- texpr(bg_Ocellatus_filt)
+fpkm_matrix_Splen <- gexpr(bg_splendidus_filt)
+fpkm_matrix_Pic <- gexpr(bg_Picturatus_filt)
+fpkm_matrix_Oce <- gexpr(bg_Ocellatus_filt)
 
 #Here i am log2 transforming my FPKM data
 log_fpkm_Splen <- log2(fpkm_matrix_Splen + 0.1)
@@ -108,31 +108,44 @@ colnames(results_limma_Pic) <- c("Log2FoldChange", "MeanExpression", "T_statisti
 colnames(results_limma_Oce) <- c("Log2FoldChange", "MeanExpression", "T_statistic", "P_value", "Q_value", "LogOdds_DE")
 
 #Here i am filtering the results from the linear model, by both the BH adjusted p value and log2 fold change value.
-Splen_sig_transcritps <- results_limma_Splen[results_limma_Splen$Q_value < 0.001 & abs(results_limma_Splen$Log2FoldChange) > 1, ]
-Pic_sig_transcritps <- results_limma_Pic[results_limma_Pic$Q_value < 0.001 & abs(results_limma_Pic$Log2FoldChange) > 1, ]
-Oce_sig_transcritps <- results_limma_Oce[results_limma_Oce$Q_value < 0.001 & abs(results_limma_Oce$Log2FoldChange) > 1, ]
+Splen_sig_genes <- results_limma_Splen[results_limma_Splen$Q_value < 0.001 & abs(results_limma_Splen$Log2FoldChange) > 1, ]
+Pic_sig_genes <- results_limma_Pic[results_limma_Pic$Q_value < 0.001 & abs(results_limma_Pic$Log2FoldChange) > 1, ]
+Oce_sig_genes <- results_limma_Oce[results_limma_Oce$Q_value < 0.001 & abs(results_limma_Oce$Log2FoldChange) > 1, ]
 #Remember the row names are gene name and then the transcript
 
-#Here i am printing out the results
+#Here i am printing out the full results:
 write.csv(Splen_sig_genes, "Splendidus_gene_results.csv", row.names=FALSE)
 write.csv(Pic_sig_genes, "Picturatus_gene_fin_results.csv", row.names=FALSE)
 write.csv(Oce_sig_genes, "Ocellatus_gene_Skin_fin_results.csv", row.names=FALSE)
 
+#Here i am printing only the gene ids
+splen_gene_ids <- rownames(Splen_sig_genes)
+pic_gene_ids <- rownames(Pic_sig_genes)
+oce_gene_ids <- rownames(Oce_sig_genes)
+
+write.csv(splen_gene_ids, "Splen_sig_gene_ids.csv", row.names = FALSE)
+write.csv(pic_gene_ids, "Pic_sig_gene_ids.csv", row.names = FALSE)
+write.csv(oce_gene_ids, "Oce_sig_gene_ids.csv", row.names = FALSE)
+
 #Here i am plotting the fpkm values for visualization
+Color_splen <- ifelse(Splen_info$Tissue == "Skin", "blue", "red")
+Color_pic <- ifelse(Pic_info$Tissue == "Skin", "blue", "red")
+Color_oce <- ifelse(Oce_info$Tissue == "Skin", "blue", "red")
+
 boxplot(log_fpkm_Splen,
-        col=as.numeric(Splen_info$Tissue),
+        col=Color_splen,
         las=2,
         ylab="log2(FPKM+0.1)",
         main = "FPKM distribution across Splendidus species")
 
 boxplot(log_fpkm_Pic,
-        col=as.numeric(Pic_info$Tissue),
+        col=Color_pic,
         las=2,
         ylab="log2(FPKM+0.1)",
         main = "FPKM distribution across Picturatus species")
 
 boxplot(log_fpkm_Oce,
-        col=as.numeric(Oce_info$Tissue),
+        col=Color_oce,
         las=2,
         ylab='log2(FPKM+0.1)',
         main = "FPKM distribution across Ocellatus species")
@@ -140,29 +153,30 @@ boxplot(log_fpkm_Oce,
 #Bargraph for differentially expressed transcripts.
 det_counts <- data.frame(
   Species = c("Splendidus", "Picturatus", "Ocellatus"),
-  DEG_Count = c(nrow(Splen_sig_transcritps), nrow(Pic_sig_transcritps), nrow(Oce_sig_transcritps))
+  DEG_Count = c(nrow(Splen_sig_genes), nrow(Pic_sig_genes), nrow(Oce_sig_genes))
 )
 
 ggplot(det_counts, 
        aes(x = Species, y = DEG_Count, fill = Species)) +
        geom_bar(stat = "identity") +
   scale_fill_brewer(palette = "Set1") +
-  labs(title = "Differentially expressed transcritps per species",
+  labs(title = "Differentially expressed genes per species",
        x = "Species",
-       y = "Number of DETs") +
+       y = "Number of DEGs") +
   theme(legend.position="none")
 
 #For fin to nonskin comparison
 det2_counts <- data.frame(
   Species = c("Picturatus", "Ocellatus"),
-  DEG_Count = c(nrow(Pic_sig_transcritps), nrow(Oce_sig_transcritps))
+  DEG_Count = c(nrow(Pic_sig_genes), nrow(Oce_sig_genes))
 )
 
 ggplot(det2_counts, 
        aes(x = Species, y = DEG_Count, fill = Species)) +
   geom_bar(stat = "identity") +
   scale_fill_brewer(palette = "Set1") +
-  labs(title = "Differentially expressed transcritps per species",
+  labs(title = "Differentially expressed genes per species",
        x = "Species",
-       y = "Number of DETs") +
+       y = "Number of DEGs") +
   theme(legend.position="none")
+
